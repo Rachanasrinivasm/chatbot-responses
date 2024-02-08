@@ -1,0 +1,29 @@
+def rule_based_chatbot(input_text):
+    # Convert input to lowercase for case-insensitive matching
+    input_text_lower = input_text.lower()
+
+    # Define rules and responses
+    if 'hello' in input_text_lower or 'hi' in input_text_lower or 'hey' in input_text_lower:
+        return 'Hello there!'
+    elif 'how are you' in input_text_lower:
+        return 'I am doing well, thank you!'
+    elif 'bye' in input_text_lower or 'goodbye' in input_text_lower:
+        return 'Goodbye!'
+    elif 'thanks' in input_text_lower or 'thank you' in input_text_lower:
+        return 'You\'re welcome!'
+    elif 'capabilities' in input_text_lower:
+        return 'I am a rule-based chatbot. I can greet you, inquire about your well-being, say goodbye, and more!'
+    else:
+        return "I'm sorry, I don't understand that."
+
+# Example usage
+while True:
+    user_input = input("You: ")
+
+    # Exit the loop if the user wants to end the conversation
+    if user_input.lower() in ['exit', 'quit', 'bye']:
+        print("Chatbot: Goodbye!")
+        break
+
+    response = rule_based_chatbot(user_input)
+    print("Chatbot:", response)
