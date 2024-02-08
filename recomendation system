@@ -1,0 +1,71 @@
+#include <stdio.h>
+
+#define USERS 5
+#define ITEMS 5
+
+void trainModel(int user_ratings[USERS][ITEMS], double similarity_matrix[USERS][USERS]) {
+    // This is a simple collaborative filtering approach, where the similarity
+    // between users is computed based on their ratings.
+
+    // Compute similarity matrix
+    for (int i = 0; i < USERS; i++) {
+        for (int j = 0; j < USERS; j++) {
+            double dot_product = 0.0;
+            double norm_i = 0.0;
+            double norm_j = 0.0;
+
+            for (int k = 0; k < ITEMS; k++) {
+                dot_product += user_ratings[i][k] * user_ratings[j][k];
+                norm_i += user_ratings[i][k] * user_ratings[i][k];
+                norm_j += user_ratings[j][k] * user_ratings[j][k];
+            }
+
+            similarity_matrix[i][j] = dot_product / (sqrt(norm_i) * sqrt(norm_j));
+        }
+    }
+}
+
+void recommend(int user_id, int user_ratings[USERS][ITEMS], double similarity_matrix[USERS][USERS]) {
+    // Recommend items to the given user based on collaborative filtering
+
+    printf("Recommendations for User %d:\n", user_id);
+
+    // Compute predicted ratings
+    for (int item = 0; item < ITEMS; item++) {
+        if (user_ratings[user_id][item] == 0) { // Only recommend items not rated yet
+            double predicted_rating = 0.0;
+            double total_similarity = 0.0;
+
+            for (int other_user = 0; other_user < USERS; other_user++) {
+                if (other_user != user_id && user_ratings[other_user][item] != 0) {
+                    predicted_rating += similarity_matrix[user_id][other_user] * user_ratings[other_user][item];
+                    total_similarity += fabs(similarity_matrix[user_id][other_user]);
+                }
+            }
+
+            if (total_similarity > 0) {
+                predicted_rating /= total_similarity;
+                printf("Item %d: Predicted Rating: %.2lf\n", item, predicted_rating);
+            }
+        }
+    }
+}
+
+int main() {
+    int user_ratings[USERS][ITEMS] = {
+        {4, 5, 0, 0, 3},
+        {0, 4, 3, 4, 0},
+        {5, 0, 0, 0, 4},
+        {0, 0, 4, 5, 0},
+        {3, 0, 5, 0, 0}
+    };
+
+    double similarity_matrix[USERS][USERS];
+
+    trainModel(user_ratings, similarity_matrix);
+
+    // Get recommendations for User 2
+    recommend(2, user_ratings, similarity_matrix);
+
+    return 0;
+}
